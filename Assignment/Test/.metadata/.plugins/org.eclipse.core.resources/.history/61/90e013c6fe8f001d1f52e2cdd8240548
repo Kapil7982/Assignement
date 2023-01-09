@@ -1,0 +1,38 @@
+package com.test.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.test.entity.Data;
+import com.test.entity.Entry;
+import com.test.entity.OutputDto;
+
+@RestController
+public class EntryController {
+
+	@Autowired
+	RestTemplate restTempleate;
+	
+	@GetMapping("/entries/{category}")
+	public List<OutputDto> entriesByCategoryHandler(@PathVariable("category") String category)
+	{
+		Data data = restTempleate.getForObject("https://api.publicapis.org/entries", Data.class);
+		
+		List<Entry> entries = data.getEntries();
+		
+		List<OutputDto> output = new ArrayList<>();
+		
+		List<OutputDto> list = new ArrayList<>();
+		
+		for(Entry entry : entries)
+		{
+			list.add(new OutputDto(entry.getApi(), entry.getDescription()));
+		}
+	}
+}
