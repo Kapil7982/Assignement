@@ -1,0 +1,64 @@
+package com.paypal.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.paypal.models.Sprint;
+import com.paypal.models.Task;
+import com.paypal.models.TaskStatus;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+
+
+@RestController
+@RequestMapping("/api/v1")
+public class TaskPlannerController {
+
+    @Autowired
+    private TaskPlannerService taskPlannerService;
+
+    @PostMapping("/sprints")
+    public Sprint createSprint(@RequestBody CreateSprintRequest createSprintRequest) {
+        return taskPlannerService.createSprint(createSprintRequest.getName());
+    }
+
+    @PostMapping("/tasks")
+    public Task addTaskToSprint(@RequestBody AddTaskRequest addTaskRequest) {
+        Sprint sprint = new Sprint();
+        sprint.setId(addTaskRequest.getSprintId());
+        User assignee = new User();
+        assignee.setId(addTaskRequest.getAssigneeId());
+        return taskPlannerService.addTaskToSprint(addTaskRequest.getTitle(), addTaskRequest.getType(),
+                                                  addTaskRequest.getDescription(), assignee, sprint);
+    }
+
+    @PutMapping("/tasks/{taskId}/assignee")
+    public Task changeTaskAssignee(@PathVariable Long taskId, @RequestBody ChangeTaskAssigneeRequest changeTaskAssigneeRequest) {
+        User newAssignee = new User();
+        newAssignee.setId(changeTaskAssigneeRequest.getAssigneeId());
+        return taskPlannerService.changeTaskAssignee(taskId, newAssignee);
+    }
+
+    @PutMapping("/tasks/{taskId}/status")
+    public Task changeTaskStatus(@PathVariable Long taskId, @RequestBody ChangeTaskStatusRequest changeTaskStatusRequest) {
+        TaskStatus newStatus = changeTaskStatusRequest.getStatus();
+        return taskPlannerService.changeTaskStatus(taskId, newStatus);
+    }
+
+    @GetMapping("/sprints/{sprintId}/tasks")
+    public List<Task> getAllTasksBySprint(@PathVariable Long sprintId) {
+        return taskPlannerService.getAllTasksBySprint(sprintId);
+    }
+
+    @GetMapping("/users/{userId}/tasks")
+    public List<Task> getAllTasksByAssignee(@PathVariable Long userId) {
+        return taskPlannerService.getAllTasksByAssignee(userId);
+    }
+}

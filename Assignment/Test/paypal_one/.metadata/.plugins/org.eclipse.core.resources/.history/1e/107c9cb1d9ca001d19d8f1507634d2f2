@@ -1,0 +1,33 @@
+package com.paypal.service;
+
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.paypal.models.Task;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+
+public class TaskService {
+
+	   @Autowired
+	    private TaskRepository taskRepository;
+
+	    public Task addTask(Task task) {
+	        return taskRepository.save(task);
+	    }
+
+	    public Task updateTask(Task task) {
+	        return taskRepository.save(task);
+	    }
+
+	    public Task getTaskById(Long id) {
+	        return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task not found with ID " + id));
+	    }
+
+	    public List<Task> getAllTasksByAssignee(User assignee) {
+	        return taskRepository.findAllByAssignee(assignee);
+	    }
+}

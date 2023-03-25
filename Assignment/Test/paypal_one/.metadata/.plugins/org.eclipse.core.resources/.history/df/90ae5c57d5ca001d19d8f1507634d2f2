@@ -1,0 +1,60 @@
+package com.paypal.service;
+
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.paypal.models.Task;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+import com.paypal.repo.UserRepository;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with ID " + id));
+    }
+
+    public List<Task> getAllTasksByAssignee(User assignee) {
+        return userRepository.findAllTasksByAssignee(assignee);
+    }
+
+//    public void addTaskToUserTaskList(Long userId, Long taskId) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+//        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
+//
+//        List<Task> tasks = user.getTasks();
+//        tasks.add(task);
+//        user.setTasks(tasks);
+//
+//        userRepository.save(user);
+//    }
+
+    public void addTaskToUserTaskList(User user, Task task) {
+        user = userRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("User not found");
+        final Task finalTask = taskRepository.findById(task.getId()).orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + task.getId()));
+
+        List<Task> tasks = user.getTasks();
+        tasks.add(finalTask);
+        user.setTasks(tasks);
+
+        userRepository.save(user);
+    }
+    
+
+}
+

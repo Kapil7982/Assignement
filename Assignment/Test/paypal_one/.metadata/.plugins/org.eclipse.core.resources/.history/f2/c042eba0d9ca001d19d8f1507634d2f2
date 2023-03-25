@@ -1,0 +1,67 @@
+package com.paypal.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.paypal.models.Sprint;
+import com.paypal.models.Task;
+import com.paypal.models.TaskStatus;
+import com.paypal.repo.SprintRepository;
+import com.paypal.repo.TaskRepository;
+
+@Service
+public class SprintService {
+
+    @Autowired
+    private SprintRepository sprintRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
+
+    public Sprint createSprint(Sprint sprint) {
+        return sprintRepository.save(sprint);
+    }
+
+    public void addTaskToSprint(Sprint sprint, Task task) {
+        sprint.getTasks().add(task);
+        sprintRepository.save(sprint);
+    }
+
+    public Sprint getSprintById(Long id) {
+        Optional<Sprint> sprint = sprintRepository.findById(id);
+        if (sprint.isPresent()) {
+            return sprint.get();
+        } else {
+            throw new EntityNotFoundException("Sprint not found with ID: " + id);
+        }
+    }
+    
+    public Task getTaskById(Long id) {
+        Optional<Task> task = taskRepository.findById(id);
+        if (task.isPresent()) {
+            return task.get();
+        } else {
+            throw new EntityNotFoundException("Task not found with ID: " + id);
+        }
+    }
+    public List<Task> getAllTasksBySprint(Sprint sprint) {
+        return sprintRepository.findAllTasksBySprint(sprint);
+    }
+
+    public void updateTaskStatusInSprint(Sprint sprint, Task task, TaskStatus status) {
+        int index = sprint.getTasks().indexOf(task);
+        if (index != -1) {
+            sprint.getTasks().get(index).setStatus(status);
+            sprintRepository.save(sprint);
+        } else {
+            throw new EntityNotFoundException("Task not found in Sprint");
+        }
+    }
+
+}
+

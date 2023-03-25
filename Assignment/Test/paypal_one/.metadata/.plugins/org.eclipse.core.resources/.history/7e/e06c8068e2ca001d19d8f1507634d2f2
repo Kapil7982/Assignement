@@ -1,0 +1,72 @@
+package com.paypal.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.paypal.models.Sprint;
+import com.paypal.models.Task;
+import com.paypal.models.TaskStatus;
+import com.paypal.models.TaskType;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+import com.paypal.service.TaskPlannerService;
+
+
+@RestController
+@RequestMapping("/api")
+public class TaskPlannerController {
+
+    @Autowired
+    private TaskPlannerService taskPlannerService;
+
+    @PostMapping("/sprints")
+    public ResponseEntity<Sprint> createSprint(@RequestParam String name) {
+        Sprint sprint = taskPlannerService.createSprint(name);
+        return ResponseEntity.ok(sprint);
+    }
+
+    @PostMapping("/tasks")
+    public ResponseEntity<Task> addTaskToSprint(@RequestParam String title, @RequestParam TaskType type, @RequestParam String description, @RequestParam Long assigneeId, @RequestParam Long sprintId) {
+        User assignee = new User();
+        assignee.setId(assigneeId);
+        Sprint sprint = new Sprint();
+        sprint.setId(sprintId);
+        Task task = taskPlannerService.addTaskToSprint(title, type, description, assignee, sprint);
+        return ResponseEntity.ok(task);
+    }
+
+    @PutMapping("/tasks/{taskId}/assignee")
+    public ResponseEntity<Task> changeTaskAssignee(@PathVariable Long taskId, @RequestParam Long assigneeId) {
+        User assignee = new User();
+        assignee.setId(assigneeId);
+        Task task = taskPlannerService.changeTaskAssignee(taskId, assignee);
+        return ResponseEntity.ok(task);
+    }
+
+    @PutMapping("/tasks/{taskId}/status")
+    public ResponseEntity<Task> changeTaskStatus(@PathVariable Long taskId, @RequestParam TaskStatus status) {
+        Task task = taskPlannerService.changeTaskStatus(taskId, status);
+        return ResponseEntity.ok(task);
+    }
+
+    @GetMapping("/sprints/{sprintId}/tasks")
+    public ResponseEntity<List<Task>> getAllTasksBySprint(@PathVariable Long sprintId) {
+        List<Task> tasks = taskPlannerService.getAllTasksBySprint(sprintId);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/users/{assigneeId}/tasks")
+    public ResponseEntity<List<Task>> getAllTasksByAssignee(@PathVariable Long assigneeId) {
+        List<Task> tasks = taskPlannerService.getAllTasksByAssignee(assigneeId);
+        return ResponseEntity.ok(tasks);
+    }
+}

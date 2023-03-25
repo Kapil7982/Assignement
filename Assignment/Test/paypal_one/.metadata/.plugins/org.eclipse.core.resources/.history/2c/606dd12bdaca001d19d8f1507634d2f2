@@ -1,0 +1,87 @@
+package com.paypal.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.paypal.models.Sprint;
+import com.paypal.models.Task;
+import com.paypal.models.TaskStatus;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+import com.paypal.service.SprintService;
+import com.paypal.service.UserService;
+
+@RestController
+@RequestMapping("/api")
+public class TaskPlannerController {
+
+    @Autowired
+    private SprintService sprintService;
+
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @PostMapping("/sprints")
+    public Sprint createSprint(@RequestBody Sprint sprint) {
+        return sprintService.createSprint(sprint);
+    }
+
+    @PostMapping("/sprints/{sprintId}/tasks")
+    public void addTaskToSprint(@PathVariable Long sprintId, @RequestBody Task task) {
+        Sprint sprint = sprintService.getSprintById(sprintId);
+        sprintService.addTaskToSprint(sprint, task);
+    }
+
+    @PutMapping("/sprints/{sprintId}/tasks/{taskId}")
+    public void updateTaskStatusInSprint(@PathVariable Long sprintId, @PathVariable Long taskId, @RequestBody TaskStatus status) {
+        Sprint sprint = sprintService.getSprintById(sprintId);
+        Task task = sprintService.getTaskById(taskId);
+        sprintService.updateTaskStatusInSprint(sprint, task, status);
+    }
+
+    @GetMapping("/sprints/{sprintId}/tasks")
+    public List<Task> getAllTasksBySprint(@PathVariable Long sprintId) {
+        Sprint sprint = sprintService.getSprintById(sprintId);
+        return sprintService.getAllTasksBySprint(sprint);
+    }
+
+    @GetMapping("/users/{userId}/tasks")
+    public List<Task> getAllTasksByAssignee(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        return userService.getAllTasksByAssignee(user);
+    }
+
+    @PostMapping("/users")
+    public User createUser(@RequestBody User user) {
+        return userService.createUser(user);
+    }
+
+    @GetMapping("/users/{userId}")
+    public User getUserById(@PathVariable Long userId) {
+        return userService.getUserById(userId);
+    }
+
+    @PostMapping("/users/{userId}/tasks")
+    public void addTaskToUserTaskList(@PathVariable Long userId, @RequestBody Task task) {
+        User user = userService.getUserById(userId);
+        userService.addTaskToUserTaskList(user, task);
+    }
+
+    public void updateTaskAssignedToUser(Task task, User user) {
+        task.setAssignee(user);
+        taskRepository.save(task);
+    }
+
+}
+

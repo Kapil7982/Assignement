@@ -1,0 +1,5 @@
+package com.paypal.exceptions;
+
+public class NotFoundException {
+
+}

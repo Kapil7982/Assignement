@@ -1,0 +1,65 @@
+package com.paypal.service;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.paypal.models.Sprint;
+import com.paypal.models.Task;
+import com.paypal.models.TaskStatus;
+import com.paypal.models.TaskType;
+import com.paypal.models.User;
+import com.paypal.repo.SprintRepository;
+import com.paypal.repo.TaskRepository;
+import com.paypal.repo.UserRepository;
+
+@Service
+public class TaskPlannerService {
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private SprintRepository sprintRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public Sprint createSprint(String name) {
+        Sprint sprint = new Sprint();
+        sprint.setName(name);
+        return sprintRepository.save(sprint);
+    }
+
+    public Task addTaskToSprint(String title, TaskType type, String description, User assignee, Sprint sprint) {
+        Task task = new Task();
+        task.setTitle(title);
+        task.setType(type);
+        task.setDescription(description);
+        task.setAssignee(assignee);
+        task.setSprint(sprint);
+        task.setStatus(TaskStatus.TODO);
+        return taskRepository.save(task);
+    }
+
+    public Task changeTaskAssignee(Long taskId, User newAssignee) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
+        task.setAssignee(newAssignee);
+        return taskRepository.save(task);
+    }
+
+    public Task changeTaskStatus(Long taskId, TaskStatus newStatus) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
+        task.setStatus(newStatus);
+        return taskRepository.save(task);
+    }
+
+    public List<Task> getAllTasksBySprint(Long sprintId) {
+        Sprint sprint = sprintRepository.findById(sprintId).orElseThrow(() -> new NotFoundException("Sprint not found"));
+        return sprint.getTasks();
+    }
+
+    public List<Task> getAllTasksByAssignee(Long assigneeId) {
+        User assignee = userRepository.findById(assigneeId).orElseThrow(() -> new NotFoundException("User not found"));
+        return assignee.getTasks();
+    }
+}

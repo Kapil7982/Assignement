@@ -1,0 +1,30 @@
+//package com.paypal.exceptions;
+//
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.ControllerAdvice;
+//import org.springframework.web.bind.annotation.ExceptionHandler;
+//import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+//
+//@ControllerAdvice
+//public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+//    @ExceptionHandler(ResourceNotFoundException.class)
+//    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
+//        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), 
+//                HttpStatus.NOT_FOUND.getReasonPhrase(), HttpStatus.NOT_FOUND.value());
+//        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+//    }
+//    
+//    @Override
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+//                                                                  HttpHeaders headers,
+//                                                                  HttpStatus status,
+//                                                                  WebRequest request) {
+//        ErrorDetails errorDetails = new ErrorDetails(new Date(), "Validation failed", 
+//                HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST.value());
+//        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+//    }
+//    
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleGlobalException(Exception ex) {
+//        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), 
+//                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), HttpStatus.INTERNAL

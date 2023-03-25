@@ -1,0 +1,51 @@
+package com.paypal.service;
+
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.paypal.models.Task;
+import com.paypal.models.User;
+import com.paypal.repo.TaskRepository;
+import com.paypal.repo.UserRepository;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+    
+//    @Autowired
+//    private TaskRepository taskRepository;
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with ID " + id));
+    }
+
+    public List<Task> getAllTasksByAssignee(User assignee) {
+        return userRepository.findAllTasksByAssignee(assignee);
+    }
+
+    public void addTaskToUserTaskList(User user2, Task task) {
+        User user = getUserById(user2);
+        user.getTasks().add(task);
+        userRepository.save(user);
+    }
+    private User getUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new EntityNotFoundException("User not found with ID: " + id);
+        }
+    }
+
+}
+
