@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename Java project &apos;Desktop_App_Screen-DeepThought-&apos; to &apos;Deep_Thought&apos;&#x0D;&#x0A;- Original element: &apos;Desktop_App_Screen-DeepThought-&apos;&#x0D;&#x0A;- Renamed element: &apos;Desktop_App_Screen-DeepThought-&apos;&#x0D;&#x0A;- Update references to refactored element" description="Rename Java project &apos;Desktop_App_Screen-DeepThought-&apos;" flags="7" id="org.eclipse.jdt.ui.rename.java.project" input="=Desktop_App_Screen-DeepThought-" name="Deep_Thought" references="true" stamp="1682610259431" version="1.0"/>
+</session>
